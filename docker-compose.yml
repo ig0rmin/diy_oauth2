@@ -8,3 +8,15 @@ services:
     build: ./server
     ports:
       - "8081:5000"
+    networks:
+      - mongo_net
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    networks:
+      - mongo_net
+
+networks:
+  mongo_net:
+    driver: bridge

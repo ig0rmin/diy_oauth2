@@ -28,6 +28,8 @@ def check_auth(request):
     session_token = None
     if 'token' in session:
         session_token = session['token']
+    else:
+        app.logger.debug('token not in the session')
 
     # Token from request takes priority over session
     if request_token is not None:
@@ -36,15 +38,24 @@ def check_auth(request):
             session['token'] = request_token
             return claims['user_id']
         else:
-            del session['user_id']
+            del session['token']
             return None
     
     if session_token is not None:
         claims = validate_jwt(session_token)
-        if 'user' in claims:
+        if 'user_id' in claims:
             return claims['user_id']
+    else:
+        app.logger.debug('Session token is None')
 
     return None
+
+@app.route('/callback', methods=['GET'])
+def callback():
+    user_id = check_auth(request)
+    if user_id is not None:
+        return redirect('/')
+    abort(401, "Unauthorized")
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -55,6 +66,11 @@ def home():
         else:
             return redirect('http://localhost:8081/oauth/authorize')
     return render_template('userinfo.html', user_id=user_id)
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    del session['token']
+    return redirect('/')
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)

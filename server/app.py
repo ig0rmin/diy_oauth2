@@ -106,7 +106,7 @@ def access_token():
         user_id = consume_authorization_token(token)
         if user_id is not None:
             jwt_token = issue_jwt_token(user_id)
-            return redirect(f'http://localhost:8080/?token={jwt_token}')
+            return redirect(f'http://localhost:8080/callback?token={jwt_token}')
     abort(401, "Unauthorized")
 
 if __name__ == "__main__":

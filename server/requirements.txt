@@ -1,4 +1,6 @@
 Flask
 gunicorn
 pymongo
+bcrypt
 Authlib
+joserfc

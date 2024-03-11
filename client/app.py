@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from flask import Flask, request, session, abort, render_template, redirect
 from joserfc import jwt
 from joserfc.errors import BadSignatureError
@@ -8,9 +7,9 @@ app.secret_key = 'secret'
 
 jwt_secret = 'jwt secret'
 
-def validate_jwt(jwt):
+def validate_jwt(token):
     try:
-        decoded = jwt.decode(jwt, jwt_secret)
+        decoded = jwt.decode(token, jwt_secret)
         return decoded.claims
     except BadSignatureError: 
         return {}
@@ -24,11 +23,7 @@ def check_auth(request):
     Returns:
         User ID.
     """
-    auth_header = request.headers.get('Authorization')
-
-    request_token = None
-    if auth_header and auth_header.startswith('Bearer '):
-        request_token = auth_header.split(' ')[1]
+    request_token = request.args.get('token')
 
     session_token = None
     if 'token' in session:
@@ -37,17 +32,17 @@ def check_auth(request):
     # Token from request takes priority over session
     if request_token is not None:
         claims = validate_jwt(request_token)
-        if 'user' in claims:
+        if 'user_id' in claims:
             session['token'] = request_token
-            return claims['user']
+            return claims['user_id']
         else:
-            del session['b']
+            del session['user_id']
             return None
     
     if session_token is not None:
         claims = validate_jwt(session_token)
         if 'user' in claims:
-            return claims['user']
+            return claims['user_id']
 
     return None
 

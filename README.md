@@ -1,6 +1,6 @@
 ## About
 
-This is a Python demo of OAuth2 authorization server and a Client using it, using Flask, JWT and Mongo DB as a backend.
+This is a Python demo of DIY OAuth2 Authorization Server (very simple and supporting only one client) and a Client using it. Implementation uses Flask, JWT and Mongo DB.
 
 `client` directory contains client application and configuration files. 
 

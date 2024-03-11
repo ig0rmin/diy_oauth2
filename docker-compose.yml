@@ -2,10 +2,14 @@ version: '3'
 services:
   client:
     build: ./client
+    env_file:
+      - ./client/.env
     ports:
       - "8080:5000"
   server:
     build: ./server
+    env_file:
+      - ./server/.env
     ports:
       - "8081:5000"
     networks:

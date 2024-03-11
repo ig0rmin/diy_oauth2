@@ -108,7 +108,6 @@ def authorize():
 @app.route('/oauth/token', methods=['GET'])
 def access_token():
     token = request.args.get('token')
-    app.logger.debug(f'token: {token}')
     if token is not None:
         user_id = consume_authorization_token(token)
         if user_id is not None:

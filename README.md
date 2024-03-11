@@ -1,4 +1,45 @@
 ## About
 
-This is a Python demo of OAuth 2 Authentication Server and Client, using Flask, JWT and Mongo DB as a backend.
+This is a Python demo of OAuth2 authorization server and a Client using it, using Flask, JWT and Mongo DB as a backend.
+
+`client` directory contains client application and configuration files. 
+
+`server` directory contains authentication server and configuration files.
+
+
+## Running Locally
+
+Run:
+
+```
+docker-compose up --build
+```
+
+Client app now should run on the port `:8080` and server on `:8081`. 
+
+**Before testing you need to create a test user**:
+
+```
+curl -XPOST -H "Content-Type: application/json" -d '{"username":"ig0rm", "password":"qwerty123456"}' localhost:8081/create_user
+```
+Output should be similar to this:
+
+```
+User created: 65eec704b38c95fbc36f673c
+```
+
+Now navigate to the `localhost:8080`. You should see the page that offers you to login:
+
+![Login](/doc/screenshot.png)
+
+After you press the "Login" button you will be redirected to the authentication server running on localhost:8081. 
+
+![Auth window](/doc/screenshot_2.png)
+
+Server issues JWT authentication token and redirects you back to the client than now show you as logged in:
+
+![Logged user](/doc/screenshot_3.png)
+
+
+
 

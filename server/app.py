@@ -1,17 +1,24 @@
 #!/usr/bin/env python
+import os
 from flask import Flask, render_template, redirect, request, abort
 from pymongo import MongoClient
 from joserfc import jwt
+from dotenv import load_dotenv
 import bcrypt
 import uuid
 import time
 
 app = Flask(__name__)
 
-jwt_secret = 'jwt secret'
+load_dotenv()
 
-client = MongoClient('mongodb', 27017)
-db = client['oauth2']
+jwt_secret = os.environ.get('JWT_SECRET')
+mongo_db_host = os.environ.get('MONGO_DB_HOST')
+mongo_db_port = int(os.environ.get('MONGO_DB_PORT'))
+client_callback = os.environ.get('CLIENT_CALLBACK')
+
+client = MongoClient(mongo_db_host, mongo_db_port)
+db = client['oauth2_demo']
 users_collection = db['users']
 tokens_collection = db['tokens']
 
@@ -69,7 +76,7 @@ def home():
 
 # For test purposes only
 @app.route('/create_user', methods=['POST'])
-def create_user():
+def create_user_route():
     if not request.is_json:
         abort(400, "Request body should have JSON")
     data = request.get_json()
@@ -80,8 +87,8 @@ def create_user():
     try:
         user_id = create_user(user_name, password)
         return f'User created: {user_id}'
-    except Exception:
-        abort(409, f'User {user_name} already exist')
+    except Exception as e:
+        abort(409, str(e))
 
 # Should authorize the user and on success issue authorization token
 @app.route('/oauth/authorize', methods=['GET', 'POST'])
@@ -106,7 +113,7 @@ def access_token():
         user_id = consume_authorization_token(token)
         if user_id is not None:
             jwt_token = issue_jwt_token(user_id)
-            return redirect(f'http://localhost:8080/callback?token={jwt_token}')
+            return redirect(f'{client_callback}?token={jwt_token}')
     abort(401, "Unauthorized")
 
 if __name__ == "__main__":

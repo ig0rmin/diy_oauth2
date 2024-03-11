@@ -2,5 +2,5 @@ Flask
 gunicorn
 pymongo
 bcrypt
-Authlib
 joserfc
+python-dotenv
